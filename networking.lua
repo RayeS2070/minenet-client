@@ -1,5 +1,6 @@
 local internet = require("internet")
 local computer = require("computer")
+local event = require("event")
 
 local Module = { http = {} }
 
@@ -29,7 +30,7 @@ local function Request(url, body, headers, timeout)
             return nil, "request failed: connection timed out"
         end
 
-        os.sleep(0.05)
+        local _ = event.pull(0.5, "modem_message")
     end
 
     return handle
