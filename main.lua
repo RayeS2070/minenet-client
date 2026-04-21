@@ -14,6 +14,12 @@ local const = {
     kInterruptedEvent = "interrupted"
 }
 
+local config = {
+    exporting = {
+        kItemsDuration = 600
+    }
+}
+
 -- local url = "http://127.0.0.1:8080"
 
 local function test_get(endpoint)
@@ -49,6 +55,10 @@ local function main()
     local timer = timer.InfinityTimer:Make(0.5, function()
         print(computer.uptime())
     end)
+
+    for item in ME.allItems() do
+        print(("Item: %s, size: %d"):format(item.name, item.size))
+    end
 
     event.pull()
     while not event.pull(5, const.kInterruptedEvent) do end
