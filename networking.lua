@@ -30,7 +30,7 @@ local function Request(url, body, headers, timeout)
             return nil, "request failed: connection timed out"
         end
 
-        local _ = event.pull(0.5, "modem_message")
+        os.sleep(0.05)
     end
 
     return handle

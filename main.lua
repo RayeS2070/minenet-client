@@ -20,45 +20,22 @@ local config = {
     }
 }
 
--- local url = "http://127.0.0.1:8080"
-
-local function test_get(endpoint)
-    local response, error = net.http.Get(endpoint, nil, 10)
-
-    if response then
-        for chunk in response do
-            print(chunk)
-        end
-    else
-        print(error)
-    end
-end
-
-local function test_post(endpoint, body)
-    local response, error = net.http.Post(endpoint, body, nil, 10)
-
-    if response then
-        for chunk in response do
-            print(chunk)
-        end
-    else
-        print(error)
-    end
-end
-
 local function main()
     local endpoint = const.kUrl .. "/export"
 
-    test_get(endpoint)
-    test_post(endpoint, ("{time: %s}"):format(computer.uptime()))
+    for item in ME.allItems() do
+        local body = ("{Item: %s, size: %d},"):format(item.name, item.size)
+        local response, err = net.http.Post(endpoint, body, nil, 1)
+        local respbody = ""
+        for chunk in response do
+            respbody = respbody .. chunk
+        end
+        print(respbody)
+    end
 
     local timer = timer.InfinityTimer:Make(0.5, function()
         print(computer.uptime())
     end)
-
-    for item in ME.allItems() do
-        print(("Item: %s, size: %d"):format(item.name, item.size))
-    end
 
     event.pull()
     while not event.pull(5, const.kInterruptedEvent) do end
