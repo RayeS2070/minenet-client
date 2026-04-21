@@ -1,9 +1,9 @@
 local internet = require("internet")
 local computer = require("computer")
 
-local module = { http = {} }
+local Module = { http = {} }
 
-local function request(url, body, headers, timeout)
+local function Request(url, body, headers, timeout)
     local handle, err = internet.request(url, body, headers)
 
     if not handle then
@@ -20,7 +20,7 @@ local function request(url, body, headers, timeout)
         end
 
         if status == nil then
-            return nil, format "request failed: %s" { err or "unknown error" }
+            return nil, ("request failed: %s"):format(err or "unknown error")
         end
 
         if computer.uptime() >= start + timeout then
@@ -35,12 +35,12 @@ local function request(url, body, headers, timeout)
     return handle
 end
 
-function module.http.get(url, headers, timeout)
-    return request(url, nil, headers, timeout)
+function Module.http.Get(url, headers, timeout)
+    return Request(url, nil, headers, timeout)
 end
 
-function module.http.post(url, body, headers, timeout)
-    return request(url, body or {}, headers, timeout)
+function Module.http.Post(url, body, headers, timeout)
+    return Request(url, body or {}, headers, timeout)
 end
 
-return module
+return Module
