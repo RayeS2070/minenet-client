@@ -1,47 +1,26 @@
 local internet = require("internet")
 local computer = require("computer")
 local event = require("event")
+local os = require("os")
 
 local Module = { http = {} }
 
-local function Request(url, body, headers, timeout)
-    local handle, err = internet.request(url, body, headers)
+local function Request(url, body, headers, mehtod)
+    local handle = internet.request(url, body, headers, mehtod)
 
-    if not handle then
-        return nil, ("request failed: %s"):format(err or "unknown error")
-    end
+    local result = ""
 
-    local start = computer.uptime()
+    for chunk in handle do result = result .. chunk end
 
-    while true do
-        local status, err = handle.finishConnect()
-
-        if status then
-            break
-        end
-
-        if status == nil then
-            return nil, ("request failed: %s"):format(err or "unknown error")
-        end
-
-        if computer.uptime() >= start + timeout then
-            handle.close()
-
-            return nil, "request failed: connection timed out"
-        end
-
-        os.sleep(0.05)
-    end
-
-    return handle
+    return result
 end
 
-function Module.http.Get(url, headers, timeout)
-    return Request(url, nil, headers, timeout)
+function Module.http.Get(url, headers)
+    return pcall(Request, url, nil, headers, "GET")
 end
 
-function Module.http.Post(url, body, headers, timeout)
-    return Request(url, body or {}, headers, timeout)
+function Module.http.Post(url, body, headers)
+    return pcall(Request, url, body or {}, headers, "POST")
 end
 
 return Module
